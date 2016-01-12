@@ -1,0 +1,231 @@
+<link rel="import" 	href="/res/app/bower_components/polymer/polymer.html">
+<link rel="import" 	href="/res/app/bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" 	href="/res/app/bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" 	href="/res/app/bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" 	href="/res/app/bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="/res/app/bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" 	href="/res/app/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" 	href="/res/app/bower_components/iron-list/iron-list.html">
+<link rel="import" href="/res/app/bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="/res/app/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/res/app/bower_components/iron-form/iron-form.html">
+<link rel="import" href="/res/app/bower_components/iron-input/iron-input.html">
+  
+	
+  <link rel="import" href="/res/app/bower_components/paper-header-panel/paper-header-panel.html">
+  <link rel="import" href="/res/app/bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="/res/app/bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="/res/app/bower_components/paper-menu/paper-menu.html">
+  <link rel="import" href="/res/app/bower_components/paper-item/paper-item.html">
+  <link rel="import" href="/res/app/bower_components/paper-badge/paper-badge.html">
+  <link rel="import" href="/res/app/bower_components/paper-input/paper-input.html">
+  <link rel="import" href="/res/app/bower_components/paper-button/paper-button.html">
+    <link rel="import" href="/res/app/bower_components/paper-ripple/paper-ripple.html">
+  <link rel="import" href="/res/app/bower_components/neon-animation/neon-animated-pages.html">
+  
+  <link rel="import" href="/res/app/bower_components/paper-datatable/paper-datatable-card.html">
+  <link rel="import" href="/res/app/bower_components/paper-datatable/paper-datatable.html">
+  <link rel="import" href="/res/app/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+
+ 		
+<dom-module id="Clndr-Table"> 
+<style>
+       :host {
+        @apply(--layout-fit);
+        @apply(--layout-vertical);
+        @apply(--paper-font-common-base);
+        display: block;
+        font-family: sans-serif;
+      }
+    .ListHeading {
+    	 
+      background: var(--paper-grey-400);
+      font-weight: bold;
+      font-size: 20px;
+      width: 750px;
+    }
+    .ListHeading paper-button {
+      --paper-icon-button-ink-color: white;
+      background: var(--paper-grey-500);
+      padding: 2px 2px 2px 2px;
+      font-size: 12px;        
+    }
+   .ListBody {
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+	  background-color: var(--paper-grey-200, #eee);
+    	width: 750px;
+    }     
+    .item {
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+      cursor: pointer;        
+      border-bottom: 1px solid #DDD;
+    }
+    .item:focus,
+    .item.selected:focus {
+      outline: 0;
+      background-color: #ddd;
+    }       
+    .item.selected:not(:focus) {
+      background-color: var(--google-grey-100);
+    }
+    .pad {
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+      padding-top: 8px;
+      padding-bottom: 16px;        
+    }
+    .primary {
+      font-size: 16px;
+    }
+    .secondary {
+      font-size: 14px;
+    }
+    .dim {
+      color: gray;
+    }
+  </style>
+  
+<template> 
+
+<iron-ajax  id="ajaxTableClndr"  handle-as="json" last-response="{{dsClndrTable}}" > </iron-ajax>
+
+<div class="flex vertical layout" align="center">
+	<div class="ListHeading" align="center">
+	<div> Calendar List</div> 
+		<div>
+			<paper-button on-click="refreshClndrList"> <iron-icon
+				icon="refresh"></iron-icon> Refresh </paper-button>
+			<paper-button on-click="ViewClndrRec"> <iron-icon
+				icon="create"></iron-icon> View </paper-button>		
+		</div>
+ 	</div>
+
+
+	<div class="flex vertical layout ListBody" align="center">
+ 		 						
+		<paper-datatable id="datatable" selectable data="{{dsClndrTable.ClndrList}}" selectedItem= "{{myitem}" >
+			<paper-datatable-column header="Id"  property="ClndrId" style="color:green; width:75px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Year"  property="YearCd" style="color:green; width:100px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Year End"  property="YearEndCd" style="color:green; width:100px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Date"  property="ClndrDt" style="color:green; width:175px;" type="String"   sortable>					
+			</paper-datatable-column>						 				
+			</paper-datatable>
+ 
+        </div>    
+</div>           
+</template> 
+
+<script>
+
+Polymer({
+    is: 'Clndr-Table',
+    properties: {
+        myitem: Object
+      },
+    refreshClndrList: function(e) {
+        var thisAjax = document.querySelector('#ajaxTableClndr');          
+       
+       thisAjax.url = "/Clndr";
+       var pClndrId = "0";
+       var pReqSubTpCd = "ClndrList_ByClndrAll";
+       thisAjax.params = { Req: "List", ReqSubTp: pReqSubTpCd, ClndrId: pClndrId};
+        
+       this.async(function() {
+     	    thisAjax.generateRequest();
+     	  }, 1000);    
+     }, 
+       ViewClndrRec: function(e) {  
+	   	 var pgViewClndr = document.querySelector('Clndr-View');
+	   	 var pgClndrTblt = document.querySelector('Clndr-Table');
+	    
+	   	pgViewClndr.ClndrId =  pgClndrTblt.$.datatable.selectedItem.ClndrId;
+	   	pgViewClndr.YearCd =  pgClndrTblt.$.datatable.selectedItem.YearCd;
+	   	pgViewClndr.YearEndCd =  pgClndrTblt.$.datatable.selectedItem.YearEndCd;
+	   	pgViewClndr.ClndrDt =  pgClndrTblt.$.datatable.selectedItem.ClndrDt;
+  
+         this.fire('show-View');
+      } 
+  });
+</script> 
+
+</dom-module>
+ 
+<dom-module id="Clndr-View"> 
+<style>
+    p {
+      font-size: 14px;
+    }
+    #ClndrId {
+    width: 100px;
+    }
+    #YearCd {
+    width: 100px;
+    }
+    #YearEndCd {
+    width: 50px;
+    }
+    .divViewClndr {
+    background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+  </style>
+<template>
+ 
+ 
+<div class="container" align="center" >
+
+<form is="iron-form" id="form">
+ <paper-material class="divViewClndr" elevation="2">	
+<h2>View Calendar</h2>
+<paper-input id="ClndrId"  value="{{ClndrId}}" label="Calendar ID" readonly="true" ></paper-input>
+ <paper-input id="YearCd" value="{{YearCd}}" label="Year" readonly="true"></paper-input>
+ <paper-input id="YearEndCd" value="{{YearEndCd}}" label="Year End" readonly="true"></paper-input>
+ <paper-input id="ClndrDt" value="ClndrDt" label="Date" readonly="true"></paper-input>
+ 		  
+<paper-button on-click="cancelViewClndrRec" elevation="2">
+      <iron-icon icon="cancel"></iron-icon>
+      Cancel
+</paper-button>		 
+		  
+</paper-material>		  
+</form>
+
+</div>	 
+ 
+</template> 
+
+<script>
+  Polymer({   
+    is: 'Clndr-View',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    properties: {
+        ClndrId: {
+            type: Number,
+            value: 0
+        },
+        YearCd: {
+            type: Number,
+            value: 0
+        },
+        YearEndCd: {
+            type: String,
+            value: "N"
+        },
+        ClndrDt: {
+            type: Date
+        } 
+    },
+    cancelViewClndrRec: function(e) {
+             this.fire('show-Table');
+          }
+ 
+  });
+</script> </dom-module>

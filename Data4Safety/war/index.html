@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+<!-- 1. Use an HTML Import to bring in shared elements. -->
+<link rel="import" href="../WebCompInclude.html">
+
+<link rel="import" href="../AplMain.html">
+
+ <style type="text/css">
+ .green .paper-header {
+        background-color: var(--paper-green-500);
+      }
+ 
+ </style>
+</head>
+
+<body class="fullbleed layout vertical">
+ 
+<paper-header-panel mode="seamed" class="flex layout vertical green">  
+
+<div class="flex layout vertical">
+	<D4S-Header></D4S-Header>
+</div>
+
+<div class="flex layout vertical"> </div>        
+   
+</paper-header-panel> 
+
+<script>
+	// To ensure that elements are ready on polyfilled browsers, 
+	// wait for WebComponentsReady. 
+	document.addEventListener('WebComponentsReady', function() {
+
+	});
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <title>Vaadin Components Code Examples</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="bower_components/marked/lib/marked.js"></script>
+
+  <script src="bower_components/code-example/vendor/prismjs/prism.js"></script>
+  <link rel="stylesheet" href="bower_components/code-example/vendor/prismjs/prism.css">
+  <link rel="stylesheet" href="bower_components/components-demo-resources/demo.css">
+
+  <script src="ga.js"></script>
+  <style type="text/css">
+    #readme code {
+      font-size: 12px;
+      max-height: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <section id="readme">
+  </section>
+  <script>
+    var xmlhttp;
+    xmlhttp=new XMLHttpRequest();
+    xmlhttp.open("GET", "https://api.github.com/repos/vaadin/vaadin-components/contents/README.md?ref=master", false);
+    xmlhttp.send();
+    var readme = document.getElementById("readme");
+    var obj = JSON.parse(xmlhttp.responseText);
+    readme.innerHTML = marked(atob(obj.content.replace(/\n/g,'')));
+
+    [].forEach.call(readme.querySelectorAll("pre"), function(pre) {
+      var code = document.createElement("code");
+      code.innerHTML = pre.innerHTML;
+      var parent = pre.parentElement;
+      parent.insertBefore(code, pre);
+      parent.removeChild(pre);
+
+      code.className = "language-markup";
+      Prism.highlightElement(code);
+    });
+
+  </script>
+
+</body>
+</html>

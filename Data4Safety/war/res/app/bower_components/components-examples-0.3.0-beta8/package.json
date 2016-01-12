@@ -1,0 +1,11 @@
+{
+  "name": "vaadin-components-examples",
+  "version": "1.0.0",
+  "author": "Vaadin Ltd",
+  "license": "Apache License 2.0",
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-flatten": "latest",
+    "gulp-replace": "latest"
+  }
+}

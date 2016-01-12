@@ -1,0 +1,900 @@
+<link rel="import" 	href="/res/app/bower_components/polymer/polymer.html">
+<link rel="import" 	href="/res/app/bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" 	href="/res/app/bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" 	href="/res/app/bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" 	href="/res/app/bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="/res/app/bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" 	href="/res/app/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" 	href="/res/app/bower_components/iron-list/iron-list.html">
+<link rel="import" href="/res/app/bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="/res/app/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/res/app/bower_components/iron-form/iron-form.html">
+<link rel="import" href="/res/app/bower_components/iron-input/iron-input.html">
+  
+	
+   <link rel="import" href="/res/app/bower_components/paper-header-panel/paper-header-panel.html">
+  <link rel="import" href="/res/app/bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="/res/app/bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="/res/app/bower_components/paper-menu/paper-menu.html">
+  <link rel="import" href="/res/app/bower_components/paper-item/paper-item.html">
+  <link rel="import" href="/res/app/bower_components/paper-badge/paper-badge.html">
+  <link rel="import" href="/res/app/bower_components/paper-input/paper-input.html">
+  <link rel="import" href="/res/app/bower_components/paper-button/paper-button.html">
+  <link rel="import" href="/res/app/bower_components/paper-ripple/paper-ripple.html">
+  <link rel="import" href="/res/app/bower_components/neon-animation/neon-animated-pages.html">
+  <link rel="import" href="/res/app/bower_components/paper-listbox/paper-listbox.html">
+   <link rel="import" href="/res/app/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+  
+  
+  <link rel="import" href="/res/app/bower_components/paper-datatable/paper-datatable-card.html">
+  <link rel="import" href="/res/app/bower_components/paper-datatable/paper-datatable.html">
+  <link rel="import" href="/res/app/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+
+ 		
+<dom-module id="DeathCause-Table"> 
+<style>
+       :host {
+        @apply(--layout-fit);
+        @apply(--layout-vertical);
+        @apply(--paper-font-common-base);
+        display: block;
+        font-family: sans-serif;
+      }
+    .ListHeading {
+    	 
+      background: var(--paper-grey-400);
+      font-weight: bold;
+      font-size: 20px;
+      width: 750px;
+    }
+    .ListHeading paper-button {
+      --paper-icon-button-ink-color: white;
+      background: var(--paper-grey-500);
+      padding: 2px 2px 2px 2px;
+      font-size: 12px;        
+    }
+   .ListBody {
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+	  background-color: var(--paper-grey-200, #eee);
+    }     
+    .item {
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+      cursor: pointer;        
+      border-bottom: 1px solid #DDD;
+    }
+    .item:focus,
+    .item.selected:focus {
+      outline: 0;
+      background-color: #ddd;
+    }       
+    .item.selected:not(:focus) {
+      background-color: var(--google-grey-100);
+    }
+    .pad {
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+      padding-top: 8px;
+      padding-bottom: 16px;        
+    }
+    .primary {
+      font-size: 16px;
+    }
+    .secondary {
+      font-size: 14px;
+    }
+    .dim {
+      color: gray;
+    }
+  </style>
+  
+<template> 
+
+<iron-ajax  id="ajaxTableDeathCause"  handle-as="json" last-response="{{dsDeathCauseTable}}" > </iron-ajax>
+<iron-ajax id="ajaxDeathCauseBulkLoad" handle-as="json" last-response="{{dsDeathCauseTable}}"> </iron-ajax> 
+
+
+<div class="flex vertical layout" align="center">
+	<div class="ListHeading" align="center">
+	<div> Death Cause List (Admin)</div> 
+		<div>
+			<paper-button on-click="refreshDeathCauseList"> <iron-icon
+				icon="refresh"></iron-icon> Refresh </paper-button>
+			<paper-button on-click="DeathCause0AddRec"> <iron-icon
+				icon="add"></iron-icon> Add Grp 0</paper-button>
+			<paper-button on-click="DeathCause1AddRec"> <iron-icon
+				icon="add"></iron-icon> Add Grp 1</paper-button>
+			<paper-button on-click="DeathCause2AddRec"> <iron-icon
+				icon="add"></iron-icon> Add Grp 2</paper-button>	
+			<paper-button on-click="DeathCause3AddRec"> <iron-icon
+				icon="add"></iron-icon> Add Grp 3</paper-button>	
+			<paper-button on-click="DeathCause4AddRec"> <iron-icon
+				icon="add"></iron-icon> Add Grp 4</paper-button>				
+			<!--  paper-button on-click="DeathCauseEditRec"> <iron-icon
+				icon="create"></iron-icon> Edit </paper-button-->
+			<paper-button on-click="DeathCauseLoadBulk"> <iron-icon
+				icon="create"></iron-icon> Load Bulk </paper-button>
+					
+		</div>
+ 	</div>
+
+
+	<div class="flex vertical layout ListBody" align="center">
+ 		 						
+		<paper-datatable id="datatable" selectable data="{{dsDeathCauseTable.DeathCauseList}}" selectedItem= "{{myitem}" >
+			<paper-datatable-column header="Id"  property="DeathCauseId" style="color:green; width:50px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Group"  property="DeathCauseGrpCd" style="color:green; width:75px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Death Cause Name"  property="DeathCauseNm" style="color:green; width:200px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="GBD Code"  property="DeathCauseGBDCd" style="color:green; width:75px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 3 Name"  property="DeathCauseGrp3Nm" style="color:green; width:150px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 3 GBD"  property="DeathCauseGrp3GBDCd" style="color:green; width:75px;" type="String"   sortable>					
+			</paper-datatable-column>			
+			<paper-datatable-column header="Grp 2 Name"  property="DeathCauseGrp2Nm" style="color:green; width:150px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 2 GBD"  property="DeathCauseGrp2GBDCd" style="color:green; width:75px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 1 Name"  property="DeathCauseGrp1Nm" style="color:green; width:150px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 1 GBD"  property="DeathCauseGrp1GBDCd" style="color:green; width:75px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 0 Name"  property="DeathCauseGrp0Nm" style="color:green; width:150px;" type="String"   sortable>					
+			</paper-datatable-column>
+			<paper-datatable-column header="Grp 0 GBD"  property="DeathCauseGrp0GBDCd" style="color:green; width:75px;" type="String"   sortable>					
+			</paper-datatable-column>
+			 			</paper-datatable>
+ 
+        </div>    
+</div>           
+</template> 
+
+<script>
+
+Polymer({
+    is: 'DeathCause-Table',
+    properties: {
+        myitem: Object
+      },
+    refreshDeathCauseList: function(e) {
+        var thisAjax = document.querySelector('#ajaxTableDeathCause');          
+       
+       thisAjax.url = "/DeathCause";
+       var pDeathCauseId = "0";
+       var pReqSubTpCd = "DeathCauseList_ByDeathCauseAll";
+       thisAjax.params = { Req: "List", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId};
+        
+       this.async(function() {
+     	    thisAjax.generateRequest();
+     	  }, 1000);    
+     },
+     DeathCause0AddRec: function(e) {         
+         this.fire('add-Grp0');
+       },
+     DeathCause1AddRec: function(e) {         
+         this.fire('add-Grp1');
+       },
+     DeathCause2AddRec: function(e) {         
+           this.fire('add-Grp2');
+         },
+     DeathCause3AddRec: function(e) {         
+         this.fire('add-Grp3');
+       },
+     DeathCause4AddRec: function(e) {         
+           this.fire('add-Grp4');
+         },
+      DeathCauseEditRec: function(e) {  
+    	 var model = e.model;
+	   	 var pgDeathCauseEdit = document.querySelector('DeathCause-Edit');
+	   	var pgDeathCauseTblt = document.querySelector('DeathCause-Table');
+	    
+    	 pgDeathCauseEdit.DeathCauseId =  pgDeathCauseTblt.$.datatable.selectedItem.DeathCauseId;
+   	  	pgDeathCauseEdit.DeathCauseGBDCd =  pgDeathCauseTblt.$.datatable.selectedItem.DeathCauseGBDCd;
+     	 pgDeathCauseEdit.DeathCauseNm =  pgDeathCauseTblt.$.datatable.selectedItem.DeathCauseNm;
+  
+ 
+           this.fire('edit-AllGrp');
+         },  
+      DeathCauseDelRec: function(e) { 
+    	  var model = e.model;
+           this.fire('del-AllGrp');
+         },
+         DeathCauseLoadBulk: function(e) { 
+             var thisAjax = document.querySelector('#ajaxDeathCauseBulkLoad'); 
+             thisAjax.url = "/DeathCause";
+             var pDeathCauseId = "0";
+             var pReqSubTpCd = "DeathCauseList_ByDeathCauseAll";
+             thisAjax.params = { Req: "LoadBulk", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId};
+              
+             this.async(function() {
+           	    thisAjax.generateRequest();
+           	  }, 1000);    
+  
+            this.fire('show-Tbl');
+         }  
+  });
+</script> 
+
+</dom-module>
+
+
+<dom-module id="DeathCauseGrp0-Add"> 
+<style>
+
+    p {
+      font-size: 14px;
+    }
+    #DeathCauseGBDCd {
+    width: 100px;
+    }
+    #DeathCauseNm {
+    width: 350px;
+    }
+    .divAddDeathCauseGrp0 {
+   background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+    
+  </style>
+<template>
+<div class="container" align="center" elevation="2">
+
+<h2>Add Death Cause  Group 0</h2>
+<form is="iron-form" id="frmAddDeathCause"  >
+<paper-material class="divAddDeathCauseGrp0" elevation="2">	
+<paper-input id="DeathCauseGBDCd" required = true label="GBD Code"></paper-input>
+<paper-input id="DeathCauseNm" required = true label="Name"></paper-input>
+ 
+<paper-button on-click="addDeathCauseRec">
+      <iron-icon icon="save"></iron-icon>
+      Save
+</paper-button>
+<paper-button on-click="cancelAddDeathCauseRec">
+      <iron-icon icon="cancel"></iron-icon>
+      Cancel
+</paper-button>
+</paper-material>	
+ 	  
+</form>
+
+<iron-ajax id="ajaxAddDeathCauseGrp0"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCauseGrp0-Add',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    addDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxAddDeathCauseGrp0');   
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Add', DeathCauseGrpCd: "0", DeathCauseId: "0", DeathCauseGBDCd: this.$.DeathCauseGBDCd.value,   DeathCauseNm: this.$.DeathCauseNm.value,
+        		  DeathCauseGrp0Id: "0", DeathCauseGrp0GBDCd: "--",   DeathCauseGrp0Nm: "--",
+        		  DeathCauseGrp1Id: "0", DeathCauseGrp1GBDCd: "--",   DeathCauseGrp1Nm: "--",
+        		  DeathCauseGrp2Id: "0", DeathCauseGrp2GBDCd: "--",   DeathCauseGrp2Nm: "--",
+        		  DeathCauseGrp3Id: "0", DeathCauseGrp3GBDCd: "--",   DeathCauseGrp3Nm: "--" 
+          };         
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          // Refresh grid after record is added.
+          var oAjaxGetDeathCause = document.querySelector('#ajaxTableDeathCause');          
+          
+          oAjaxGetDeathCause.url = "/DeathCause";
+          var pDeathCauseId = "0";
+          var pReqSubTpCd = "DeathCauseList_ByDeathCauseAll";
+          oAjaxGetDeathCause.params = { Req: "List", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId};
+  
+          
+          this.async(function() {
+        	  oAjaxGetDeathCause.generateRequest();
+        	  }, 1000);
+          
+          this.fire('show-Tbl');
+        },  
+        cancelAddDeathCauseRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+
+<dom-module id="DeathCauseGrp1-Add"> 
+<style>
+
+    p {
+      font-size: 14px;
+    }
+    #DeathCauseGBDCd {
+    width: 100px;
+    }
+    #DeathCauseNm {
+    width: 350px;
+    }
+    .divAddDeathCauseGrp1 {
+   background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+    
+  </style>
+<template>
+<iron-ajax  id="ajaxListDeathCauseGrp0" url="/DeathCause" params='{"Req": "List", "ReqSubTp": "DeathCauseList_ByDeathCauseGrp0", "DeathCauseId": "0"}'  handle-as="json" last-response="{{dsDeathCauseGrp0List}}" auto> </iron-ajax>
+
+<div class="container" align="center" elevation="2">
+
+<h2>Add Death Cause  Group 1</h2>
+<form is="iron-form" id="frmAddDeathCause"  >
+<paper-material class="divAddDeathCauseGrp1" elevation="2">	
+<paper-input id="DeathCauseGBDCd" required = true label="GBD Code"></paper-input>
+<paper-input id="DeathCauseNm" required = true label="Name"></paper-input>
+ 
+ <paper-dropdown-menu id="DeathCauseGrp0DD" label="Death Cause" attr-for-selected="value"   selected-item-label="{{SelDeathCauseNm}}">
+    <paper-listbox class="dropdown-content">
+      <template is="dom-repeat" items="[[dsDeathCauseGrp0List.DeathCauseList]]" as="item" selected="0"  >
+        <paper-item value$="[[item.DeathCauseId]]">[[item.DeathCauseNm]]</paper-item>
+      </template>
+    </paper-listbox>
+</paper-dropdown-menu>
+ 
+ 
+<paper-button on-click="addDeathCauseRec">
+      <iron-icon icon="save"></iron-icon>
+      Save
+</paper-button>
+<paper-button on-click="cancelAddDeathCauseRec">
+      <iron-icon icon="cancel"></iron-icon>
+      Cancel
+</paper-button>
+</paper-material>	
+ 	  
+</form>
+
+<iron-ajax id="ajaxAddDeathCauseGrp1"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCauseGrp1-Add',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    addDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxAddDeathCauseGrp1');
+          var pgDeathCauseGrp1 = document.querySelector('DeathCauseGrp1-Add');
+          var pDeathCauseGrp0Id =   pgDeathCauseGrp1.$.DeathCauseGrp0DD.selectedItem.getAttribute("value");
+  
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Add', DeathCauseGrpCd: "1", DeathCauseId: "0", DeathCauseGBDCd: this.$.DeathCauseGBDCd.value,   DeathCauseNm: this.$.DeathCauseNm.value,
+        		  DeathCauseGrp0Id: pDeathCauseGrp0Id, DeathCauseGrp0GBDCd: "--",   DeathCauseGrp0Nm: "--",
+        		  DeathCauseGrp1Id: "0", DeathCauseGrp1GBDCd: "--",   DeathCauseGrp1Nm: "--",
+        		  DeathCauseGrp2Id: "0", DeathCauseGrp2GBDCd: "--",   DeathCauseGrp2Nm: "--",
+        		  DeathCauseGrp3Id: "0", DeathCauseGrp3GBDCd: "--",   DeathCauseGrp3Nm: "--" 
+          };         
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          // Refresh grid after record is added.
+          var oAjaxGetDeathCause = document.querySelector('#ajaxTableDeathCause');          
+          
+          oAjaxGetDeathCause.url = "/DeathCause";
+          var pDeathCauseId = "0";
+          var pReqSubTpCd = "DeathCauseList_ByDeathCauseAll";
+          oAjaxGetDeathCause.params = { Req: "List", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId};
+  
+          
+          this.async(function() {
+        	  oAjaxGetDeathCause.generateRequest();
+        	  }, 1000);
+          
+          this.fire('show-Tbl');
+        },  
+        cancelAddDeathCauseRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="DeathCauseGrp2-Add"> 
+<style>
+
+    p {
+      font-size: 14px;
+    }
+	#DeathCauseGBDCd {
+    width: 100px;
+    }
+    #DeathCauseNm {
+    width: 350px;
+    }
+    #DeathCauseGrp1DD {
+    width: 350px;
+    }
+    .divAddDeathCauseGrp2 {
+   background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+    
+  </style>
+<template>
+
+<iron-ajax  id="ajaxListDeathCauseGrp1" url="/DeathCause" params='{"Req": "List", "ReqSubTp": "DeathCauseList_ByDeathCauseGrp1", "DeathCauseId": "0"}'  handle-as="json" last-response="{{dsDeathCauseGrp1List}}" auto> </iron-ajax>
+
+
+<div class="container" align="center" elevation="2">
+
+<h2>Add Death Cause  Group 2</h2>
+<form is="iron-form" id="frmAddDeathCauseGrp2"  >
+<paper-material class="divAddDeathCauseGrp2" elevation="2">	
+<paper-input id="DeathCauseGBDCd" required = true label="GBD Code"></paper-input>
+<paper-input id="DeathCauseNm" required = true label="Name"></paper-input>
+
+<paper-dropdown-menu id="DeathCauseGrp1DD" label="Death Cause" attr-for-selected="value"   selected-item-label="{{SelDeathCauseNm}}">
+    <paper-listbox class="dropdown-content">
+      <template is="dom-repeat" items="[[dsDeathCauseGrp1List.DeathCauseList]]" as="item" selected="0"  >
+        <paper-item value$="[[item.DeathCauseId]]">[[item.DeathCauseNm]]</paper-item>
+      </template>
+    </paper-listbox>
+</paper-dropdown-menu>
+
+
+<div>
+<paper-button on-click="addDeathCauseRec">
+      <iron-icon icon="save"></iron-icon>
+      Save
+</paper-button>
+<paper-button on-click="cancelAddDeathCauseRec">
+      <iron-icon icon="cancel2"></iron-icon>
+      Cancel
+</paper-button>
+</div>
+</paper-material>	
+ 	  
+</form>
+
+<iron-ajax id="ajaxAddDeathCauseGrp2"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCauseGrp2-Add',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    addDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxAddDeathCauseGrp2');  
+          var pgDeathCauseGrp2 = document.querySelector('DeathCauseGrp2-Add');
+          var pDeathCauseGrp1Id =   pgDeathCauseGrp2.$.DeathCauseGrp1DD.selectedItem.getAttribute("value");
+ 
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Add', DeathCauseGrpCd: "2", DeathCauseId: "0", DeathCauseGBDCd: this.$.DeathCauseGBDCd.value,   DeathCauseNm: this.$.DeathCauseNm.value,
+        		  DeathCauseGrp0Id: "0", DeathCauseGrp0GBDCd: "--",   DeathCauseGrp0Nm: "--",
+        		  DeathCauseGrp1Id: pDeathCauseGrp1Id, DeathCauseGrp1GBDCd: "--",   DeathCauseGrp1Nm: "--",
+        		  DeathCauseGrp2Id: "0", DeathCauseGrp2GBDCd: "--",   DeathCauseGrp2Nm: "--",
+        		  DeathCauseGrp3Id: "0", DeathCauseGrp3GBDCd: "--",   DeathCauseGrp3Nm: "--" 
+          };         
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          // Refresh grid after record is added.
+          var oAjaxGetDeathCause = document.querySelector('#ajaxTableDeathCause');          
+          
+          this.async(function() {
+        	  oAjaxGetDeathCause.generateRequest();
+        	  }, 1000);
+          
+          this.fire('show-Tbl');
+        },  
+        cancelAddDeathCauseRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="DeathCauseGrp3-Add"> 
+<style>
+
+    p {
+      font-size: 14px;
+    }
+	#DeathCauseGBDCd {
+    width: 100px;
+    }
+    #DeathCauseNm {
+    width: 350px;
+    }
+    #DeathCauseGrp2DD {
+    width: 350px;
+    }
+    .divAddDeathCauseGrp3 {
+    background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+  </style>
+<template>
+<iron-ajax  id="ajaxListDeathCauseGrp2" url="/DeathCause" params='{"Req": "List", "ReqSubTp": "DeathCauseList_ByDeathCauseGrp2", "DeathCauseId": "0"}'  handle-as="json" last-response="{{dsDeathCauseGrp2List}}" auto> </iron-ajax>
+
+<div class="container" align="center" elevation="2">
+
+<h2>Add Death Cause  Group 3</h2>
+<form is="iron-form" id="frmAddDeathCauseGrp3"  >
+<paper-material class="divAddDeathCauseGrp3" elevation="2">	
+<paper-input id="DeathCauseGBDCd" required = true label="GBD Code"></paper-input>
+<paper-input id="DeathCauseNm" required = true label="Name"></paper-input>
+
+<paper-dropdown-menu id="DeathCauseGrp2DD" label="Death Cause" attr-for-selected="value"   selected-item-label="{{SelDeathCauseNm}}">
+    <paper-listbox class="dropdown-content">
+      <template is="dom-repeat" items="[[dsDeathCauseGrp2List.DeathCauseList]]" as="item" selected="0"  >
+        <paper-item value$="[[item.DeathCauseId]]">[[item.DeathCauseNm]]</paper-item>
+      </template>
+    </paper-listbox>
+</paper-dropdown-menu>
+
+<div>
+<paper-button on-click="addDeathCauseRec">
+      <iron-icon icon="save"></iron-icon>
+      Save
+</paper-button>
+<paper-button on-click="cancelAddDeathCauseRec">
+      <iron-icon icon="cancel"></iron-icon>
+      Cancel
+</paper-button>
+</div>
+</paper-material>	
+ 	  
+</form>
+
+<iron-ajax id="ajaxAddDeathCauseGrp3"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCauseGrp3-Add',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    addDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxAddDeathCauseGrp3');   
+          var pgDeathCauseGrp3 = document.querySelector('DeathCauseGrp3-Add');
+          var pDeathCauseGrp2Id =   pgDeathCauseGrp3.$.DeathCauseGrp2DD.selectedItem.getAttribute("value");
+
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Add', DeathCauseGrpCd: "3", DeathCauseId: "0", DeathCauseGBDCd: this.$.DeathCauseGBDCd.value,   DeathCauseNm: this.$.DeathCauseNm.value,
+        		  DeathCauseGrp0Id: "0", DeathCauseGrp0GBDCd: "--",   DeathCauseGrp0Nm: "--",
+        		  DeathCauseGrp1Id: "0", DeathCauseGrp1GBDCd: "--",   DeathCauseGrp1Nm: "--",
+        		  DeathCauseGrp2Id: pDeathCauseGrp2Id, DeathCauseGrp2GBDCd: "--",   DeathCauseGrp2Nm: "--",
+        		  DeathCauseGrp3Id: "0", DeathCauseGrp3GBDCd: "--",   DeathCauseGrp3Nm: "--" 
+          };         
+       
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          
+          this.async(function() {
+        	  oAjaxGetDeathCause.generateRequest();
+        	  }, 1000);
+          
+          this.fire('show-Tbl');
+        },  
+        cancelAddDeathCauseRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="DeathCauseGrp4-Add"> 
+<style>
+
+    p {
+      font-size: 14px;
+    }
+	#DeathCauseGBDCd {
+    width: 100px;
+    }
+    #DeathCauseNm {
+    width: 350px;
+    }
+    #DeathCauseGrp3DD {
+    width: 350px;
+    }
+    .divAddDeathCauseGrp4 {
+   background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+    
+  </style>
+<template>
+
+<iron-ajax  id="ajaxListDeathCauseGrp3" url="/DeathCause" params='{"Req": "List", "ReqSubTp": "DeathCauseList_ByDeathCauseGrp3", "DeathCauseId": "0"}'  handle-as="json" last-response="{{dsDeathCauseGrp3List}}" auto> </iron-ajax>
+
+
+<div class="container" align="center" elevation="2">
+
+<h2>Add Death Cause Group 4</h2>
+<form is="iron-form" id="frmAddDeathCauseGrp4"  >
+<paper-material class="divAddDeathCauseGrp4" elevation="2">	
+<paper-input id="DeathCauseGBDCd" required = true label="GBD Code"></paper-input>
+<paper-input id="DeathCauseNm" required = true label="Name"></paper-input>
+
+<paper-dropdown-menu id="DeathCauseGrp3DD" label="Death Cause" attr-for-selected="value"   selected-item-label="{{SelDeathCauseNm}}">
+    <paper-listbox class="dropdown-content">
+      <template is="dom-repeat" items="[[dsDeathCauseGrp3List.DeathCauseList]]" as="item" selected="0"  >
+        <paper-item value$="[[item.DeathCauseId]]">[[item.DeathCauseNm]]</paper-item>
+      </template>
+    </paper-listbox>
+</paper-dropdown-menu>
+<div> 
+<paper-button on-click="addDeathCauseRec">
+      <iron-icon icon="save"></iron-icon>
+      Save
+</paper-button>
+<paper-button on-click="cancelAddDeathCauseRec">
+      <iron-icon icon="cancel"></iron-icon>
+      Cancel
+</paper-button>
+</div>
+</paper-material>	
+ 	  
+</form>
+
+<iron-ajax id="ajaxAddDeathCauseGrp4"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCauseGrp4-Add',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    addDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxAddDeathCauseGrp4');   
+          var pgDeathCauseGrp4 = document.querySelector('DeathCauseGrp4-Add');
+          var pDeathCauseGrp3Id =   pgDeathCauseGrp4.$.DeathCauseGrp3DD.selectedItem.getAttribute("value");
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Add', DeathCauseGrpCd: "4", DeathCauseId: "0", DeathCauseGBDCd: this.$.DeathCauseGBDCd.value,   DeathCauseNm: this.$.DeathCauseNm.value,
+        		  DeathCauseGrp0Id: "0", DeathCauseGrp0GBDCd: "--",   DeathCauseGrp0Nm: "--",
+        		  DeathCauseGrp1Id: "0", DeathCauseGrp1GBDCd: "--",   DeathCauseGrp1Nm: "--",
+        		  DeathCauseGrp2Id: "0", DeathCauseGrp2GBDCd: "--",   DeathCauseGrp2Nm: "--",
+        		  DeathCauseGrp3Id: pDeathCauseGrp3Id, DeathCauseGrp3GBDCd: "--",   DeathCauseGrp3Nm: "--" 
+          };         
+       
+        
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          // Refresh grid after record is added.
+          var oAjaxGetDeathCause = document.querySelector('#ajaxTableDeathCause');          
+          
+          oAjaxGetDeathCause.url = "/DeathCause";
+          var pDeathCauseId = "0";
+          var pReqSubTpCd = "DeathCauseList_ByDeathCauseAll";
+          oAjaxGetDeathCause.params = { Req: "List", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId};
+  
+          
+          this.async(function() {
+        	  oAjaxGetDeathCause.generateRequest();
+        	  }, 1000);
+          
+          this.fire('show-Tbl');
+        },  
+        cancelAddDeathCauseRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="DeathCause-Edit"> 
+<style>
+    p {
+      font-size: 14px;
+    }
+    #CountryId {
+    width: 100px;
+    }
+    #CountryWHOCd {
+    width: 100px;
+    }
+    #CountryISOCd {
+    width: 100px;
+    }
+    #CountryNm {
+    width: 250px;
+    }
+    .divEditDeathCause {
+    background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+  </style>
+<template>
+ 
+ 
+<div class="container" align="center" >
+<h2>Edit Death Cause</h2>
+<form is="iron-form" id="form">
+ <paper-material class="divEditDeathCause" elevation="2">	
+
+<paper-input id="DeathCauseId"  value="{{DeathCauseId}}"   label="Death Cause ID" readonly = "true" ></paper-input>
+<paper-input id="DeathCauseGBDCd" value="{{DeathCauseGBDCd}}" required = true label="GBD Code" autofocus></paper-input>
+<paper-input id="DeathCauseNm" value="{{DeathCauseNm}}" required = true label="Death Cause Name"></paper-input>
+<paper-input id="DeathCauseGrpCd" required = true label="Level"></paper-input>
+
+<paper-input id="DeathCauseGrp1Id" required = true label="Death Cause 1 ID" readonly = "true"></paper-input>
+<paper-input id="DeathCauseGrp1GBDCd" required = true label="GBD 1 Code" readonly = "true"></paper-input>
+<paper-input id="DeathCauseGrp1Nm" required = true label="Name 1"></paper-input>
+
+<paper-input id="DeathCauseGrp2Id" required = true label="Death Cause 2 ID" readonly = "true"></paper-input>
+<paper-input id="DeathCauseGrp2GBDCd" required = true label="GBD 2 Code" readonly = "true"></paper-input>
+<paper-input id="DeathCauseGrp2Nm" required = true label="Name 2" ></paper-input>
+
+<paper-input id="DeathCauseGrp3Id" required = true label="Death Cause 3 ID" readonly = "true"></paper-input>
+<paper-input id="DeathCauseGrp3GBDCd" required = true label="GBD 3 Code" readonly = "true"></paper-input>
+<paper-input id="DeathCauseGrp3Nm" required = true label="Name 3"></paper-input>		  
+
+<paper-button on-click="editDeathCauseRec" elevation="2">
+			      <iron-icon icon="save"></iron-icon>
+			      Save Changes
+			</paper-button>
+			<paper-button on-click="cancelEditDeathCauseRec" elevation="2">
+			      <iron-icon icon="cancel"></iron-icon>
+			      Cancel
+			</paper-button>		 
+		  
+</paper-material>		  
+</form>
+
+</div>	 
+
+<iron-ajax id="ajaxEditDeathCause"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCause-Edit',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    properties: {
+        DeathCauseId: {
+            type: Number,
+            value: 0
+        },
+        DeathCauseGBDCd: {
+            type: String,
+            value: "--"
+        },
+        DeathCauseNm: {
+            type: String,
+            value: "--"
+        }
+    },
+      editDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxEditDeathCause');   
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Update', DeathCauseId: this.$.DeathCauseId.value, DeathCauseGBDCd: this.$.DeathCauseGBDCd.value,   DeathCauseNm: this.$.DeathCauseNm.value};
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          
+          this.fire('show-Tbl');
+        },  
+        cancelEditDeathCauseRec: function(e) {
+             this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="DeathCause-Del"> 
+<style>
+    .container {
+      background: white;
+    }       
+    p {
+      font-size: 14px;
+    }
+    
+  </style>
+<template>
+
+<div class="container" align="center">
+
+<h2>Delete Death Cause</h2>
+
+<form is="iron-form" id="form"   >
+		<paper-material id = "container" elevation="2">	
+			  <paper-input id="CountryId" required = true label="Country ID" autofocus></paper-input>
+			   <paper-input id="CountryWHOCd" required = true label="Country WHO Code"></paper-input>
+			   <paper-input id="CountryISOCd" required = true label="Country ISO Code"></paper-input>
+			   <paper-input id="CountryNm" required = true label="Country Name"></paper-input>
+		  <paper-button raised on-click="delDeathCauseRec">Delete</paper-button>
+		  <paper-button raised on-click="cancelDelDeathCauseRec">Cancel</paper-button>
+		 
+		  </paper-material>
+</form>
+
+<iron-ajax id="ajaxDelDeathCause"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'DeathCause-Del',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    showPage: function() {
+        this.fire('show-Tbl');
+      },
+      delDeathCauseRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxDelDeathCause');   
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/DeathCause";
+          thisAjax.params = { Req: 'Del', DeathCauseId: this.$.CountryId.value, DeathCauseWHOCd: this.$.CountryWHOCd.value, DeathCauseISOCd: this.$.CountryISOCd.value, DeathCauseNm: this.$.CountryNm.value};
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+                    
+          this.fire('show-Tbl');
+        },  
+        cancelDelDeathCauseRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+
+

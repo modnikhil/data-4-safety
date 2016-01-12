@@ -1,0 +1,21 @@
+{
+  "name": "vaadin-components-examples",
+  "version": "0.3.0-beta8",
+  "authors": [
+    "Vaadin Ltd"
+  ],
+  "keywords": [
+    "web-components",
+    "vaadin",
+    "vaadin components"
+  ],
+  "license": "Apache License 2.0",
+  "ignore": [
+    "bower_components"
+  ],
+  "dependencies": {
+    "vaadin-components": "vaadin-components#0.3.0-beta8",
+    "marked": "~0.3.3",
+    "components-demo-resources": "vaadin/components-demo-resources#master"
+  }
+}

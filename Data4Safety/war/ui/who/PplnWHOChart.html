@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- 1. Use an HTML Import to bring in shared elements. -->
+<link rel="import" href="/WebCompInclude.html">
+<link rel="import" href="/AplMain.html">
+<link rel="import"
+	href="/res/app/bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="/ui/who/PplnWHOChartPages.html">
+
+</head>
+<body class="fullbleed layout vertical">
+	<paper-header-panel mode="seamed" class="flex layout vertical green">
+
+	<div class="flex layout vertical">
+		<D4S-Header></D4S-Header>
+	</div>
+	
+	<div class="flex layout vertical">
+		 <Chart-Hdr></Chart-Hdr>
+	</div>
+	
+	<div class="flex layout vertical">		 		 		 
+		<template is="dom-bind" id="app"> 		
+		
+			<neon-animated-pages
+				class="flex" selected="[[PageCd]]"
+				exit-animation="fade-out-animation"> 
+			<Pie-Chart></Pie-Chart>
+			<Bar-Chart></Bar-Chart>
+			<Area-Chart></Area-Chart> 
+			<Bubble-Chart></Bubble-Chart> 
+			</neon-animated-pages> 
+		</template>
+	</div>
+		
+	</paper-header-panel>
+
+<script>
+       var app = document.querySelector('#app');
+       app.PageCd = 0;
+       document.addEventListener('show-Chart1', function() {
+          app.PageCd = 0;
+       });
+       document.addEventListener('show-Chart2', function() {  		    			 
+           app.PageCd = 1;
+        });
+       document.addEventListener('show-Chart3', function() {  		    			 
+          app.PageCd = 2;
+       });
+       document.addEventListener('show-Chart4', function() {  		    			 
+           app.PageCd = 3;
+        });
+</script>
+
+</body>
+</html>
+

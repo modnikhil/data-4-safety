@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+
+<!--   security-constraint>
+        <web-resource-collection>
+            <web-resource-name>profile</web-resource-name>
+            <url-pattern>/profile/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+</security-constraint -->
+
+<!--   security-constraint>
+        <web-resource-collection>
+            <web-resource-name>admin</web-resource-name>
+            <url-pattern>/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+</security-constraint -->
+    
+<servlet>
+    <display-name>Remote API Servlet</display-name>
+    <servlet-name>RemoteApiServlet</servlet-name>
+    <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>RemoteApiServlet</servlet-name>
+    <url-pattern>/remote_api</url-pattern>
+</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>Country</servlet-name>
+		<servlet-class>com.d4s.ui.Cntry.CntryUiCtrl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Country</servlet-name>
+		<url-pattern>/Country</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Country</servlet-name>
+		<url-pattern>/AdminCountry</url-pattern>
+	</servlet-mapping>
+		
+	<servlet>
+		<servlet-name>DeathCause</servlet-name>
+		<servlet-class>com.d4s.ui.DeathCause.DeathCauseUiCtrl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>DeathCause</servlet-name>
+		<url-pattern>/DeathCause</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>DeathCause</servlet-name>
+		<url-pattern>/AdminDeathCause</url-pattern>
+	</servlet-mapping> 
+	
+	<servlet>
+		<servlet-name>Clndr</servlet-name>
+		<servlet-class>com.d4s.ui.Clndr.ClndrUiCtrl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Clndr</servlet-name>
+		<url-pattern>/Clndr</url-pattern>
+	</servlet-mapping>		
+	<servlet-mapping>
+		<servlet-name>Clndr</servlet-name>
+		<url-pattern>/AdminClndr</url-pattern>
+	</servlet-mapping>		
+		
+	<servlet>
+		<servlet-name>Death</servlet-name>
+		<servlet-class>com.d4s.ui.who.DeathUiCtrl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Death</servlet-name>
+		<url-pattern>/Death</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Death</servlet-name>
+		<url-pattern>/AdminDeath</url-pattern>
+	</servlet-mapping>		
+	
+	<servlet>
+		<servlet-name>Ppln</servlet-name>
+		<servlet-class>com.d4s.ui.who.PplnUiCtrl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Ppln</servlet-name>
+		<url-pattern>/Ppln</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>Ppln</servlet-name>
+		<url-pattern>/AdminPpln</url-pattern>
+	</servlet-mapping>			
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

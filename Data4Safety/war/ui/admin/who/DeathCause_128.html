@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- 1. Use an HTML Import to bring in shared elements. -->
+<link rel="import" href="/WebCompInclude.html">
+<link rel="import" href="/AplMain.html">
+<link rel="import"
+	href="/res/app/bower_components/neon-animation/neon-animated-pages.html">
+
+<link rel="import" href="/ui/admin/who/DeathCausePages_128.html">
+ 
+ 
+</head>
+<body class="fullbleed layout vertical">
+
+<paper-header-panel mode="seamed" class="flex layout vertical green">  
+
+<div class="flex layout vertical">
+	<D4S-Header></D4S-Header>
+</div>
+
+<div class="flex layout vertical"> 
+<template is="dom-bind" id="app"> 
+		<neon-animated-pages class="flex"
+                           selected="[[PageCd]]"                           
+                           exit-animation="fade-out-animation">
+			<DeathCause-Table></DeathCause-Table> 
+			<DeathCauseGrp0-Add></DeathCauseGrp0-Add>   
+			<DeathCauseGrp1-Add></DeathCauseGrp1-Add>   
+			<DeathCauseGrp2-Add></DeathCauseGrp2-Add>   
+			<DeathCauseGrp3-Add></DeathCauseGrp3-Add>   
+			<DeathCauseGrp4-Add></DeathCauseGrp4-Add>   
+			<DeathCause-Edit></DeathCause-Edit> 
+			<DeathCause-Del></DeathCause-Del> 
+		</neon-animated-pages> 
+</template>
+</div>        
+   
+</paper-header-panel> 
+
+ 
+<script>
+       var app = document.querySelector('#app');
+       app.PageCd = 0;
+       document.addEventListener('show-Tbl', function() {
+          app.PageCd = 0;
+       });
+       document.addEventListener('add-Grp0', function() {  		    			 
+           app.PageCd = 1;
+        });
+       document.addEventListener('add-Grp1', function() {  		    			 
+           app.PageCd = 2;
+        });
+       document.addEventListener('add-Grp2', function() {  		    			 
+           app.PageCd = 3;
+        });
+       document.addEventListener('add-Grp3', function() {  		    			 
+           app.PageCd = 4;
+        });
+       document.addEventListener('add-Grp4', function() {  		    			 
+           app.PageCd = 5;
+        });
+       document.addEventListener('edit-AllGrp', function() {  		    			 
+           app.PageCd = 6;
+        });
+       document.addEventListener('del-AllGrp', function() {  		    			 
+           app.PageCd = 7;
+        });
+</script>
+ 
+</body>
+</html>
+

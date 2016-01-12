@@ -1,0 +1,553 @@
+<link rel="import" 	href="/res/app/bower_components/polymer/polymer.html">
+<link rel="import" 	href="/res/app/bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" 	href="/res/app/bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" 	href="/res/app/bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" 	href="/res/app/bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="/res/app/bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" 	href="/res/app/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" 	href="/res/app/bower_components/iron-list/iron-list.html">
+<link rel="import" href="/res/app/bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="/res/app/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/res/app/bower_components/iron-form/iron-form.html">
+<link rel="import" href="/res/app/bower_components/iron-input/iron-input.html">
+  
+	
+  <link rel="import" href="/res/app/bower_components/paper-header-panel/paper-header-panel.html">
+  <link rel="import" href="/res/app/bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="/res/app/bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="/res/app/bower_components/paper-menu/paper-menu.html">
+  <link rel="import" href="/res/app/bower_components/paper-item/paper-item.html">
+  <link rel="import" href="/res/app/bower_components/paper-badge/paper-badge.html">
+  <link rel="import" href="/res/app/bower_components/paper-input/paper-input.html">
+  <link rel="import" href="/res/app/bower_components/paper-button/paper-button.html">
+  <link rel="import" href="/res/app/bower_components/neon-animation/neon-animated-pages.html">
+  <link rel="import" href="/res/app/bower_components/paper-listbox/paper-listbox.html">
+  <link rel="import" href="/res/app/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+  
+  <link rel="import" href="/res/app/bower_components/paper-datatable/paper-datatable-card.html">
+  <link rel="import" href="/res/app/bower_components/paper-datatable/paper-datatable.html">
+  <link rel="import" href="/res/app/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+ 		
+	
+
+<dom-module id="Death-Tbl"> 
+<style>
+       :host {
+        @apply(--layout-fit);
+        @apply(--layout-vertical);
+        @apply(--paper-font-common-base);
+        display: block;
+        font-family: sans-serif;
+      }
+      .ListHeading {
+      	 
+        background: var(--paper-grey-400);
+        font-weight: bold;
+        font-size: 20px;
+        width: 1000px;
+      }
+      .ListHeading paper-button {
+        --paper-icon-button-ink-color: white;
+        background: var(--paper-grey-500);
+        padding: 2px 2px 2px 2px;
+        font-size: 12px;        
+      }
+     .ListBody {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+		background-color: var(--paper-grey-200, #eee);
+      	width: 1000px;
+      }     
+      .item {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+        cursor: pointer;        
+        border-bottom: 1px solid #DDD;
+      }
+      .item:focus,
+      .item.selected:focus {
+        outline: 0;
+        background-color: #ddd;
+      }       
+      .item.selected:not(:focus) {
+        background-color: var(--google-grey-100);
+      }
+      .pad {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+        padding-top: 8px;
+        padding-bottom: 24px;        
+      }
+      .primary {
+        font-size: 16px;
+      }
+      .secondary {
+        font-size: 14px;
+      }
+      .dim {
+        color: gray;
+      }
+       #CntryDD {
+    width:  250px;
+    }
+    #ClndrDD {
+    width:  75px;
+    }
+  </style>
+  
+<template> 
+
+
+<iron-ajax  id="ajaxTblDeath"  handle-as="json" last-response="{{dsDeathList}}" > </iron-ajax>
+<iron-ajax  id="ajaxListCntry" url="/Country" params='{"Req": "List", "ReqSubTp": "CntryList_ByCntryAll", "CntryId": "0"}'  handle-as="json" last-response="{{dsCntryList}}" auto> </iron-ajax>
+<iron-ajax  id="ajaxListClndr" url="/Clndr" params='{"Req": "List", "ReqSubTp": "ClndrList_ByClndrAll", "ClndrId": "0"}'  handle-as="json" last-response="{{dsClndrList}}" auto> </iron-ajax>
+<iron-ajax id="ajaxDeathBulkLoad" handle-as="json" last-response="{{dsDeathList}}"> 
+</iron-ajax>
+<div class="flex vertical layout" align="center">
+	<div class="ListHeading" align="center">
+		<div> Death List</div> 
+		<div>
+			<paper-button on-click="refreshDeathList"> <iron-icon
+				icon="refresh"></iron-icon> Refresh </paper-button>
+			<paper-button on-click="DeathAddRec"> <iron-icon
+				icon="add"></iron-icon> Add </paper-button>
+			<paper-button on-click="DeathEditRec"> <iron-icon
+				icon="create"></iron-icon> Edit </paper-button>
+			<paper-button on-click="DeathLoadBulk"> <iron-icon
+				icon="create"></iron-icon> Load Bulk </paper-button>					
+		</div>
+	<div class="horizontal-section-container">
+      <div>
+       
+        <div class="horizontal-section">
+          <paper-dropdown-menu id="CntryDD" label="Country Name"   attr-for-selected="value" selected="{{SelCntry}}" selected-item-label="{{SelCntryNm}}"  >
+            <paper-listbox id="CntryDDList"  class="dropdown-content" selected="0" >
+              <template is="dom-repeat" items="{{dsCntryList.CntryList}}" as="item"  >
+                <paper-item value$="[[item.CntryId]]">[[item.CntryNm]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+         
+          <paper-dropdown-menu id="ClndrDD" label="Year" attr-for-selected="value" selected-item="{{SelClndr}}" selected-item-label="{{SelYearCd}}">
+            <paper-listbox class="dropdown-content" selected="0" >
+              <template is="dom-repeat" items="[[dsClndrList.ClndrList]]" as="item">
+                <paper-item value$="[[item.ClndrId]]">[[item.YearCd]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+         
+      </div>
+    </div>
+	</div>
+
+
+
+	<div class="flex vertical layout ListBody" align="center">
+	
+		<paper-datatable id="datatable" selectable data="{{dsDeathList.DeathList}}" selectedItem= "{{myitem}" >
+			<paper-datatable-column header="Death Id"  property="DeathId" style="color:green; width:75px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Calendar"  property="ClndrId" style="color:green; width:75px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Year"  property="YearCd" style="color:green; width:75px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Country"  property="CntryId" style="color:green; width:75px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Country Name"  property="CntryNm" style="color:green; width:175px;" type="String"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Death Cause"  property="DeathCauseId" style="color:green; width:75px;" type="Number"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Death Cause Grp"  property="DeathCauseGrpCd" style="color:green; width:75px;" type="String"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Death Cause Nm"  property="DeathCauseNm" style="color:green; width:175px;" type="String"   sortable>
+			</paper-datatable-column>
+			<paper-datatable-column header="Death Count"  property="DeathAllNum" style="color:green; width:100px;" type="String"   sortable>					
+			</paper-datatable-column>
+ 		</paper-datatable>
+          
+        </div>    
+</div>           
+</template> 
+
+<script>
+
+Polymer({
+    is: 'Death-Tbl',
+    properties: {
+    	SelCntry: {
+            type: Object,
+            value: {}
+        },
+        SelClndrNm: {
+            type: String,
+            value: "--"
+        }
+    },
+    refreshDeathList: function(e) {
+        var thisAjax = document.querySelector('#ajaxTblDeath');          
+        var pgDeathList = document.querySelector('Death-Tbl');
+        var pCntryId =   pgDeathList.$.CntryDD.selectedItem.getAttribute("value");
+        var pClndrId =   pgDeathList.$.ClndrDD.selectedItem.getAttribute("value");
+        var pDeathCauseId = "0";
+        var pReqSubTpCd = "DeathList_ByCntryClndr";
+        
+       thisAjax.url = "/Death";
+       thisAjax.params = { Req: "List", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId, CntryId: pCntryId, ClndrId: pClndrId};
+        
+       this.async(function() {
+     	    thisAjax.generateRequest();
+     	  }, 1000);    
+     },   
+     DeathAddRec: function(e) { 
+     	 var pgDeathAdd = document.querySelector('Death-Add');
+    	 var pgDeathList = document.querySelector('Death-Tbl');
+    	 pgDeathAdd.CntryId =  pgDeathList.$.CntryDD.selectedItem.getAttribute("value");
+     	 pgDeathAdd.CntryNm =  pgDeathList.SelCntryNm;
+    	 pgDeathAdd.ClndrId =  pgDeathList.$.ClndrDD.selectedItem.getAttribute("value");    	 
+    	 pgDeathAdd.YearCd =  pgDeathList.SelYearCd;
+         this.fire('show-Add');
+       },
+     DeathEditRec: function(e) {  
+	   	 var pgDeathEdit = document.querySelector('Death-Edit');
+		 var pgDeathTbl  = document.querySelector('Death-Tbl');
+		    		   	
+		   	pgDeathEdit.DeathId =  pgDeathTbl.$.datatable.selectedItem.DeathId;
+		   	pgDeathEdit.CntryId =  pgDeathTbl.$.datatable.selectedItem.CntryId;
+		   	pgDeathEdit.ClndrId =  pgDeathTbl.$.datatable.selectedItem.ClndrId;
+		   	pgDeathEdit.DeathCauseId =  pgDeathTbl.$.datatable.selectedItem.DeathCauseId;
+		   	pgDeathEdit.DeathAllNum =  pgDeathTbl.$.datatable.selectedItem.DeathAllNum;
+		   	
+           this.fire('show-Edit');
+         },  
+      DeathDelRec: function(e) { 
+    	  var model = e.model;
+    	  gDeathId = model.get('item.DeathId');
+   	   // alert("Selected to delete " + model.get('item.DeathNm') );
+           this.fire('show-Del');
+         },
+      DeathLoadBulk: function(e) { 
+             var thisAjax = document.querySelector('#ajaxDeathBulkLoad');          
+             var pClndrId =  "0";
+             var pCntryId = "0";
+             var pDeathCauseId = "0";
+             var pReqSubTpCd = "DeathList_ByCntryClndr";
+             
+            thisAjax.url = "/Death";
+            thisAjax.params = { Req: "LoadBulk", ReqSubTp: pReqSubTpCd, DeathCauseId: pDeathCauseId, CntryId: pCntryId, ClndrId: pClndrId};
+            this.async(function() {
+           	    thisAjax.generateRequest();
+           	  }, 1000);   
+            
+            this.fire('show-Tbl');
+         } 
+  });
+  
+ 
+</script> 
+
+</dom-module>
+
+<dom-module id="Death-Add"> 
+<style>
+ 
+    p {
+      font-size: 14px;
+    }
+    #CntryId {
+    width: 60px;
+    }
+    #CntryNm {
+    width: 150px;
+    }
+    #ClndrId {
+    width: 100px;
+    }
+    #YearCd {
+    width: 100px;
+    }
+    .divAddDeath {
+   background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+    
+  </style>
+<template>
+
+<iron-ajax  id="ajaxListDeathCause" url="/DeathCause" params='{"Req": "List", "ReqSubTp": "DeathCauseList_ByDeathCauseAll", "DeathCauseId": "0"}'  handle-as="json" last-response="{{dsDeathCauseList}}" auto> </iron-ajax>
+
+<div class="container" align="center" elevation="2">
+
+<h2>Add Death</h2>
+<form is="iron-form" id="frmAddDeath"  >
+<paper-material class="divAddDeath" elevation="2">	
+
+<paper-input id="ClndrId" value="{{ClndrId}}"  required = true label="Calendar"></paper-input>
+<paper-input id="YearCd" value="{{YearCd}}"  required = true label="Year"></paper-input>
+<paper-input id="CntryId" value="{{CntryId}}" required = true label="Country ID" autofocus></paper-input>
+<paper-input id="CntryNm" value="{{CntryNm}}" required = true label="Country Name" autofocus></paper-input>
+         
+<paper-dropdown-menu id="DeathCauseDD" label="Death Cause" attr-for-selected="value"   selected-item-label="{{SelDeathCauseNm}}">
+    <paper-listbox class="dropdown-content">
+      <template is="dom-repeat" items="[[dsDeathCauseList.DeathCauseList]]" as="item" selected="0"  >
+        <paper-item value$="[[item.DeathCauseId]]">[[item.DeathCauseNm]]</paper-item>
+      </template>
+    </paper-listbox>
+</paper-dropdown-menu>
+          
+<paper-input id="DeathAllNum" required = true label="Death"></paper-input>
+
+<paper-button on-click="addDeathRec">
+      <iron-icon icon="save"></iron-icon>
+      Save
+</paper-button>
+<paper-button on-click="cancelAddDeathRec">
+      <iron-icon icon="cancel"></iron-icon>
+      Cancel
+</paper-button>
+</paper-material>	
+ 	  
+</form>
+
+<iron-ajax id="ajaxAddDeath"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'Death-Add',
+    properties: {
+    	CntryId: {
+            type: Number,
+            value: 0
+        },
+        CntryNm: {
+            type: String,
+            value: "--"
+        },
+        ClndrId: {
+            type: Number,
+            value: 0
+        },
+        YearCd: {
+            type: Number,
+            value: 0
+        },
+    	SelDeathCause: {
+            type: Object,
+            value: {}
+        },
+        DeathCauseId: {
+            type: String,
+            value: "--"
+        }
+    },
+    behaviors: [Polymer.NeonAnimatableBehavior],
+
+    addDeathRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxAddDeath');
+          var pgDeathList = document.querySelector('Death-Add');
+          var pDeathCauseId =   pgDeathList.$.DeathCauseDD.selectedItem.getAttribute("value");
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/Death";
+          thisAjax.params = { Req: 'Add', CntryId: this.$.CntryId.value, ClndrId: this.$.ClndrId.value, DeathCauseId: pDeathCauseId, DeathAllNum: this.$.DeathAllNum.value};
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          // Refresh grid after record is added.
+          var oAjaxGetDeath = document.querySelector('#ajaxTblDeath');          
+                   
+          this.async(function() {
+        	  oAjaxGetDeath.generateRequest();
+        	  }, 1000);
+          
+          this.fire('show-Tbl');
+        },  
+        cancelAddDeathRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="Death-Edit"> 
+<style>
+ 
+    p {
+      font-size: 14px;
+    }
+    #DeathId {
+    width: 150px;
+    }
+    #CntryId {
+    width: 150px;
+    }
+    #ClndrId {
+    width: 150px;
+    }
+    #DeathCauseId {
+    width: 150px;
+    }
+    #DeathAllNum {
+    width: 250px;
+    }
+    .divEditDeath {
+    background: white;
+    width: 500px;
+    border: 1px;
+    }
+    
+  </style>
+<template>
+ 
+ 
+<div class="container" align="center" >
+<h2>Edit Death</h2>
+<form is="iron-form" id="form">
+ <paper-material class="divEditDeath" elevation="2">	
+
+			  <paper-input id="DeathId"  value="{{DeathId}}"   label="Death Id" readonly = "true" ></paper-input>
+			  <paper-input id="CntryId"  value="{{CntryId}}"   label="Country Id" readonly = "true" ></paper-input>
+			   <paper-input id="ClndrId" value="{{ClndrId}}" label="Calendar Id" readonly = "true" ></paper-input>
+			   <paper-input id="DeathCauseId" value="{{DeathCauseId}}" label="Death Cause Id" readonly = "true" ></paper-input>
+  			   <paper-input id="DeathAllNum" value="{{DeathAllNum}}" required = "true" label="Death"></paper-input>
+		  <paper-button on-click="editDeathRec" elevation="2">
+			      <iron-icon icon="save"></iron-icon>
+			      Save Changes
+			</paper-button>
+			<paper-button on-click="cancelEditDeathRec" elevation="2">
+			      <iron-icon icon="cancel"></iron-icon>
+			      Cancel
+			</paper-button>		 
+		  
+</paper-material>		  
+</form>
+
+</div>	 
+
+<iron-ajax id="ajaxEditDeath"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+
+</template> 
+
+<script>
+  Polymer({   
+    is: 'Death-Edit',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    properties: {
+    	DeathId: {
+            type: Number,
+            value: 0
+        },
+        CntryId: {
+            type: Number,
+            value: 0
+        },
+        ClndrId: {
+            type: Number,
+            value: 0
+        },
+        DeathCauseId: {
+            type: Number,
+            value: 0
+        },
+        DeathAllNum: {
+            type: Number,
+            value: 0
+        }
+    },
+      editDeathRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxEditDeath');   
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/Death";
+          thisAjax.params = { Req: 'Update', DeathId: this.$.DeathId.value, CntryId: this.$.CntryId.value, 
+        		  ClndrId: this.$.ClndrId.value, DeathCauseId: this.$.DeathCauseId.value, DeathAllNum: this.$.DeathAllNum.value };        
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+          
+          
+          this.fire('show-Tbl');
+        },  
+        cancelEditDeathRec: function(e) {
+             this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+<dom-module id="Death-Del"> 
+<style>
+ 
+    .container {
+      background: white;
+    }       
+    p {
+      font-size: 14px;
+    }
+    
+  </style>
+<template>
+
+<div class="container" align="center">
+
+<h2>Delete Death</h2>
+
+<form is="iron-form" id="form"   >
+		<paper-material id = "container" elevation="2">	
+			  <paper-input id="CountryId" required = true label="Country ID" autofocus></paper-input>
+			   <paper-input id="CountryWHOCd" required = true label="Country WHO Code"></paper-input>
+			   <paper-input id="CountryISOCd" required = true label="Country ISO Code"></paper-input>
+			   <paper-input id="CountryNm" required = true label="Country Name"></paper-input>
+		  <paper-button raised on-click="delDeathRec">Delete</paper-button>
+		  <paper-button raised on-click="cancelDelDeathRec">Cancel</paper-button>
+		 
+		  </paper-material>
+</form>
+
+<iron-ajax id="ajaxDelDeath"   
+	handle-as="json" last-response="{{response}}" debounce-duration="300"> </iron-ajax>
+</div>	
+</template> 
+
+<script>
+  Polymer({   
+    is: 'Death-Del',
+    behaviors: [Polymer.NeonAnimatableBehavior],
+    showPage: function() {
+        this.fire('show-Tbl');
+      },
+      delDeathRec: function(e) {
+          var model = e.model;
+          var thisAjax = document.querySelector('#ajaxDelDeath');   
+          
+          thisAjax.method = "Post";          
+          thisAjax.url = "/Death";
+          thisAjax.params = { Req: 'Del', DeathId: this.$.CountryId.value, DeathWHOCd: this.$.CountryWHOCd.value, DeathISOCd: this.$.CountryISOCd.value, DeathNm: this.$.CountryNm.value};
+          
+          this.async(function() {
+        	    thisAjax.generateRequest();
+        	  }, 1000);
+                    
+          this.fire('show-Tbl');
+        },  
+        cancelDelDeathRec: function(e) {            
+            this.fire('show-Tbl');
+          }
+ 
+  });
+</script> </dom-module>
+
+
+
